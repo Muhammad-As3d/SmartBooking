@@ -1,0 +1,36 @@
+@model List<ServiceRow>
+@{
+    ViewData["Title"] = "الخدمات";
+}
+@section Actions {
+    <a class="btn sm primary" href="/app/services/new">@Html.Icon("plus") خدمة جديدة</a>
+}
+<div class="panel">
+    @if (Model.Count == 0)
+    {
+        <div class="empty">مفيش خدمات لسه.</div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Prefix</th><th>Service</th><th>Avg time</th><th>Daily limit</th><th>Counters</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td><span class="tag amber">@s.Prefix</span></td>
+                            <td><b>@s.Name</b>@if (s.Description is not null) { <div class="muted">@s.Description</div> }</td>
+                            <td class="num">@ViewHelpers.Minutes(s.AvgServiceSeconds) min</td>
+                            <td class="num">@(s.DailyLimit?.ToString() ?? "∞")</td>
+                            <td class="num">@s.CountersCount</td>
+                            <td><span class="tag @(s.IsActive ? "ok" : "")">@(s.IsActive ? "مفعّلة" : "موقوفة")</span></td>
+                            <td><a class="btn sm" href="/app/services/@s.Id">تعديل</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+<p class="muted mt-16">متوسط الوقت بيتعدّل لوحده مع كل تذكرة بتخلص، فالقيمة اللي بتكتبها هنا مجرد بداية.</p>

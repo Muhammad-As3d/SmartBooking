@@ -1,0 +1,92 @@
+@model AdminOverview
+@{
+    ViewData["Title"] = "إدارة المنصة";
+}
+<section class="wrap mt-32">
+    <div class="row between wrap-row">
+        <div>
+            <span class="eyebrow">Platform<span class="sep">//</span>Admin</span>
+            <h2 class="mt-8">المشتركين والإيراد</h2>
+        </div>
+        <form asp-antiforgery="true" method="post" action="/account/logout"><button class="btn sm ghost" type="submit">@Html.Icon("logout") خروج</button></form>
+    </div>
+
+    <div class="grid g4 mt-24">
+        <div class="panel kpi"><span class="label">Tenants</span><span class="value">@Model.Tenants</span><span class="sub">كل المنشآت</span></div>
+        <div class="panel kpi"><span class="label">Paying</span><span class="value">@Model.Active</span><span class="sub">اشتراك فعّال</span></div>
+        <div class="panel kpi"><span class="label">Trials</span><span class="value">@Model.Trials</span><span class="sub">في فترة التجربة</span></div>
+        <div class="panel kpi hl"><span class="label">MRR</span><span class="value amber">@Model.Mrr.ToString("#,0")</span><span class="sub">إيراد شهري متكرر</span></div>
+    </div>
+
+    <div class="panel mt-16">
+        <div class="panel-head"><h3>فواتير بانتظار التأكيد</h3><span class="tag amber num">@Model.PendingInvoices.Count</span></div>
+        @if (Model.PendingInvoices.Count == 0)
+        {
+            <div class="empty">مفيش فواتير معلقة.</div>
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>No.</th><th>Tenant</th><th>Plan</th><th>Amount</th><th>Confirm</th></tr></thead>
+                    <tbody>
+                        @foreach (var i in Model.PendingInvoices)
+                        {
+                            <tr>
+                                <td class="num">@i.Number</td>
+                                <td>@i.TenantName</td>
+                                <td>@i.PlanName · <span class="num">@i.Months</span> شهر</td>
+                                <td class="num">@ViewHelpers.Money(i.Amount, i.Currency)</td>
+                                <td>
+                                    <form asp-antiforgery="true" method="post" action="/admin/invoices/@i.Id/paid" class="row" data-confirm="تأكيد استلام الدفع للفاتورة @i.Number؟">
+                                        <input name="reference" class="input ltr" placeholder="رقم العملية" maxlength="100" />
+                                        <button class="btn sm primary" type="submit">تأكيد الدفع</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="panel mt-16">
+        <div class="panel-head"><h3>المنشآت</h3><span class="eyebrow">Latest 200</span></div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Name</th><th>Plan</th><th>Status</th><th>Ends</th><th>Tickets/mo</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var r in Model.Rows)
+                    {
+                        <tr>
+                            <td><b>@r.Name</b><div class="muted mono num">/q/@r.Slug · @Labels.Of(r.Kind)</div></td>
+                            <td>@r.PlanName</td>
+                            <td>
+                                <span class="tag">@SubscriptionRules.StatusLabel(r.Status)</span>
+                                @if (r.Suspended) { <span class="tag danger">موقوفة</span> }
+                            </td>
+                            <td class="num">@((r.Status == SubscriptionStatus.Trial ? r.TrialEndsAt : r.PeriodEnd)?.ToString("yyyy-MM-dd") ?? "-")</td>
+                            <td class="num">@r.TicketsThisMonth.ToString("#,0")</td>
+                            <td>
+                                <div class="row">
+                                    @if (r.Status == SubscriptionStatus.Trial)
+                                    {
+                                        <form asp-antiforgery="true" method="post" action="/admin/tenants/@r.Id/trial" class="inline">
+                                            <input type="hidden" name="days" value="7" />
+                                            <button class="btn sm" type="submit">+7 أيام</button>
+                                        </form>
+                                    }
+                                    <form asp-antiforgery="true" method="post" action="/admin/tenants/@r.Id/suspend" class="inline" data-confirm="متأكد؟">
+                                        <input type="hidden" name="suspended" value="@(r.Suspended ? "false" : "true")" />
+                                        <button class="btn sm @(r.Suspended ? "" : "danger")" type="submit">@(r.Suspended ? "تفعيل" : "إيقاف")</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

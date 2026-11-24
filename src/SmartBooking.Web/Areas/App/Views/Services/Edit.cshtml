@@ -1,0 +1,48 @@
+@model ServiceEditModel
+@{
+    ViewData["Title"] = Model.Id is null ? "خدمة جديدة" : "تعديل خدمة";
+}
+<div class="panel narrow-left">
+    <form asp-antiforgery="true" method="post" action="/app/services/save" class="stack" novalidate>
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+        <div class="grid g2">
+            <div class="field">
+                <label asp-for="Name">اسم الخدمة</label>
+                <input asp-for="Name" class="input" placeholder="كشف عام" />
+                <span asp-validation-for="Name" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Prefix">الحرف المميز</label>
+                <input asp-for="Prefix" class="input ltr" maxlength="2" placeholder="A" />
+                <span class="hint">بيظهر قبل رقم التذكرة: A-014</span>
+                <span asp-validation-for="Prefix" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="field">
+            <label asp-for="Description">وصف قصير</label>
+            <input asp-for="Description" class="input" />
+        </div>
+        <div class="grid g3">
+            <div class="field">
+                <label asp-for="AvgMinutes">متوسط مدة الخدمة (دقيقة)</label>
+                <input asp-for="AvgMinutes" class="input ltr" type="number" min="1" max="240" />
+                <span asp-validation-for="AvgMinutes" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="DailyLimit">حد يومي للأدوار</label>
+                <input asp-for="DailyLimit" class="input ltr" type="number" min="1" placeholder="بدون حد" />
+                <span asp-validation-for="DailyLimit" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="SortOrder">الترتيب</label>
+                <input asp-for="SortOrder" class="input ltr" type="number" min="0" />
+            </div>
+        </div>
+        <label class="check"><input asp-for="IsActive" /> الخدمة متاحة للحجز</label>
+        <div class="row">
+            <button class="btn primary" type="submit">حفظ</button>
+            <a class="btn ghost" href="/app/services">رجوع</a>
+        </div>
+    </form>
+</div>

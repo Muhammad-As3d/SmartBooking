@@ -1,0 +1,20 @@
+@model int
+@{
+    ViewData["Title"] = Model == 404 ? "الصفحة غير موجودة" : "حصلت مشكلة";
+    var (title, text) = Model switch
+    {
+        404 => ("الصفحة دي مش موجودة", "يمكن الرابط اتغير أو التذكرة خلصت."),
+        400 => ("الصفحة قديمة", "ارجع للصفحة اللي كنت فيها واعملها تحديث، وجرّب تاني."),
+        403 => ("مش مسموح", "الحساب ده ملوش صلاحية على الصفحة دي."),
+        429 => ("استنى لحظة", "طلبات كتير في وقت قصير. جرّب بعد دقيقة."),
+        _ => ("حصلت مشكلة غير متوقعة", "اتسجلت عندنا وهنبص عليها. جرّب تاني بعد شوية."),
+    };
+}
+<section class="auth">
+    <div class="panel center corners">
+        <span class="eyebrow">Error<span class="sep">//</span><span class="num">@Model</span></span>
+        <h2 class="mt-16">@title</h2>
+        <p class="muted mt-8">@text</p>
+        <a class="btn mt-24" href="/">@Html.Icon("arrow") الرئيسية</a>
+    </div>
+</section>

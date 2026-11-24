@@ -1,0 +1,12 @@
+@model TenantSnapshot
+@{
+    Layout = "_Bare";
+    ViewData["Title"] = "شاشة العرض";
+}
+<section class="auth">
+    <div class="panel center corners">
+        @Html.Icon("screen", "icon-lg amber")
+        <h2 class="mt-16">شاشة العرض مش ضمن باقتك</h2>
+        <p class="muted mt-8">باقة @Model.PlanName ما فيهاش شاشة الصالة. رقّي للباقة الاحترافية من صفحة الاشتراك.</p>
+    </div>
+</section>

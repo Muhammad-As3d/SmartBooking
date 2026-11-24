@@ -1,0 +1,30 @@
+@model StaffCreateModel
+@{
+    ViewData["Title"] = "إعداد مدير المنصة";
+}
+<section class="auth">
+    <div class="panel corners">
+        <span class="eyebrow">Platform<span class="sep">//</span>First run</span>
+        <h2 class="mt-8">حساب مدير المنصة</h2>
+        <p class="muted mt-8">الصفحة دي بتشتغل مرة واحدة بس، وللبريد المضاف في <span class="mono">Platform:AdminEmails</span>.</p>
+        <form method="post" class="stack mt-24" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="field">
+                <label asp-for="FullName">الاسم</label>
+                <input asp-for="FullName" class="input" />
+                <span asp-validation-for="FullName" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Email">البريد</label>
+                <input asp-for="Email" class="input ltr" type="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Password">كلمة المرور</label>
+                <input asp-for="Password" class="input ltr" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+            <button class="btn primary block" type="submit">إنشاء</button>
+        </form>
+    </div>
+</section>

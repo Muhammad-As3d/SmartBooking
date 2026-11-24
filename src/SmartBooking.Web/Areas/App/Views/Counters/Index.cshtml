@@ -1,0 +1,36 @@
+@model List<CounterRow>
+@{
+    ViewData["Title"] = "نقاط الخدمة";
+}
+@section Actions {
+    <a class="btn sm primary" href="/app/counters/new">@Html.Icon("plus") نقطة خدمة</a>
+}
+<div class="panel">
+    @if (Model.Count == 0)
+    {
+        <div class="empty">مفيش نقاط خدمة لسه. ضيف عيادة دكتور أو شباك.</div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Name</th><th>Services</th><th>State</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td><b>@c.Name</b></td>
+                            <td><div class="row wrap-row">@foreach (var s in c.ServiceNames) { <span class="tag">@s</span> }</div></td>
+                            <td>
+                                @if (!c.IsActive) { <span class="tag">موقوفة</span> }
+                                else { <span class="tag @(c.IsOpen ? "ok" : "")"><span class="dot"></span> @(c.IsOpen ? "مفتوحة" : "مقفولة")</span> }
+                            </td>
+                            <td><a class="btn sm" href="/app/counters/@c.Id">تعديل</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+<p class="muted mt-16">نقطة الخدمة ممكن تخدم أكتر من خدمة، والنظام بيحسب وقت الانتظار على عدد النقاط المفتوحة فعلاً.</p>

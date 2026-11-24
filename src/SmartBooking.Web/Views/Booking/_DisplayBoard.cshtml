@@ -1,0 +1,42 @@
+@model DisplayDto
+@{
+    var latest = Model.NowServing.FirstOrDefault();
+}
+<div class="display-body">
+    <div class="now">
+        <span class="eyebrow">Now serving<span class="sep">//</span>الدور الحالي</span>
+        <div class="now-main mt-16" data-now="@(latest?.Code)">
+            @if (latest is null)
+            {
+                <div class="code">--</div>
+                <div class="to muted">في انتظار أول نداء</div>
+            }
+            else
+            {
+                <div class="code">@latest.Code</div>
+                <div class="to">اتفضل على <span class="amber">@latest.CounterName</span></div>
+            }
+        </div>
+    </div>
+
+    <div class="board">
+        <span class="eyebrow">Recent calls<span class="sep">//</span>آخر النداءات</span>
+        @foreach (var c in Model.NowServing.Skip(1))
+        {
+            <div class="board-row"><span>@c.CounterName</span><span class="c">@c.Code</span></div>
+        }
+        @if (Model.NowServing.Count <= 1)
+        {
+            <div class="board-row muted"><span>لا يوجد</span><span class="c">--</span></div>
+        }
+
+        <span class="eyebrow mt-16">Waiting<span class="sep">//</span>المنتظرين</span>
+        @foreach (var s in Model.Services)
+        {
+            <div class="board-row">
+                <span>@s.Name <span class="muted">· التالي <span class="mono num">@(s.NextCode ?? "--")</span></span></span>
+                <span class="c">@s.Waiting</span>
+            </div>
+        }
+    </div>
+</div>

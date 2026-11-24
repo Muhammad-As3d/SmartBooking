@@ -1,0 +1,77 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var isOwner = User.IsInRole(AppRoles.Owner);
+    string On(string name) => string.Equals(controller, name, StringComparison.OrdinalIgnoreCase) ? "on" : "";
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <partial name="_Head" />
+    <title>@(ViewData["Title"] is string t ? t + " · دوري" : "لوحة التحكم · دوري")</title>
+    <meta name="robots" content="noindex" />
+</head>
+<body>
+    <div class="app">
+        <aside class="side" data-side>
+            <a class="brand" href="/app">
+                <span class="mark">#A</span>
+                <span>دوري <small>CONSOLE</small></span>
+            </a>
+            <nav>
+                <a class="@On("Dashboard")" href="/app">@Html.Icon("chart") نظرة عامة</a>
+                <a class="@On("Queue")" href="/app/queue">@Html.Icon("megaphone") الشبابيك والنداء</a>
+                <span class="grp">SETUP //</span>
+                @if (isOwner)
+                {
+                    <a class="@On("Services")" href="/app/services">@Html.Icon("list") الخدمات</a>
+                    <a class="@On("Counters")" href="/app/counters">@Html.Icon("desk") نقاط الخدمة</a>
+                    <a class="@On("Team")" href="/app/team">@Html.Icon("users") فريق العمل</a>
+                }
+                <a class="@(controller == "Settings" && ViewContext.RouteData.Values["action"]?.ToString() == "Qr" ? "on" : "")" href="/app/settings/qr">@Html.Icon("qr") كود QR والروابط</a>
+                @if (isOwner)
+                {
+                    <a class="@(controller == "Settings" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "on" : "")" href="/app/settings">@Html.Icon("settings") الإعدادات</a>
+                }
+                <a class="@On("Billing")" href="/app/billing">@Html.Icon("card") الاشتراك</a>
+            </nav>
+            <div class="me">
+                <div>@User.DisplayName()</div>
+                <div class="muted mono num">@(isOwner ? "OWNER" : "STAFF")</div>
+                <form asp-antiforgery="true" method="post" action="/account/logout" class="mt-8">
+                    <button class="btn ghost sm" type="submit">@Html.Icon("logout") خروج</button>
+                </form>
+            </div>
+        </aside>
+
+        <div class="main">
+            <div class="topbar">
+                <div class="row">
+                    <button class="btn sm menu-btn" type="button" data-menu aria-label="القائمة">@Html.Icon("menu")</button>
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+                <div class="row">
+                    <span class="conn" data-conn><span class="dot"></span> OFFLINE</span>
+                    <partial name="_ThemeToggle" />
+                    @RenderSection("Actions", required: false)
+                </div>
+            </div>
+            <div class="content">
+                @if (TempData["flash"] is string flash)
+                {
+                    <div class="flash mb" data-autohide>@flash</div>
+                }
+                @if (TempData["error"] is string error)
+                {
+                    <div class="flash error mb">@error</div>
+                }
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

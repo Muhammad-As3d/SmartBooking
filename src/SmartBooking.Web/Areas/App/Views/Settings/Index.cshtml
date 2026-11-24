@@ -1,0 +1,49 @@
+@model SettingsModel
+@{
+    ViewData["Title"] = "الإعدادات";
+}
+<div class="panel narrow-left">
+    <form method="post" class="stack" novalidate>
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+        <span class="eyebrow">Organization</span>
+        <div class="grid g2">
+            <div class="field">
+                <label asp-for="Name">اسم المنشأة</label>
+                <input asp-for="Name" class="input" />
+                <span asp-validation-for="Name" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Kind">النشاط</label>
+                <select asp-for="Kind" class="input">
+                    <option value="@BusinessKind.Clinic">عيادة خاصة</option>
+                    <option value="@BusinessKind.MedicalLab">مختبر طبي</option>
+                    <option value="@BusinessKind.ServiceOffice">مكتب خدمات</option>
+                    <option value="@BusinessKind.Other">نشاط آخر</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid g3">
+            <div class="field"><label asp-for="Phone">الهاتف</label><input asp-for="Phone" class="input ltr" /></div>
+            <div class="field"><label asp-for="City">المدينة</label><input asp-for="City" class="input" /></div>
+            <div class="field">
+                <label asp-for="TimeZoneId">التوقيت</label>
+                <select asp-for="TimeZoneId" class="input">
+                    @foreach (var z in TenantTime.Supported) { <option value="@z.Id">@z.Label</option> }
+                </select>
+            </div>
+        </div>
+        <div class="field"><label asp-for="Address">العنوان</label><input asp-for="Address" class="input" /></div>
+
+        <hr class="divider" />
+        <span class="eyebrow">Smart alert</span>
+        <div class="field">
+            <label asp-for="AlertLeadMinutes">التنبيه قبل الدور بـ (دقيقة)</label>
+            <input asp-for="AlertLeadMinutes" class="input ltr" type="number" min="5" max="60" />
+            <span class="hint">العميل بيوصله إشعار لما الوقت المتوقع لدوره يبقى أقل من الرقم ده.</span>
+            <span asp-validation-for="AlertLeadMinutes" class="field-validation-error"></span>
+        </div>
+        <label class="check"><input asp-for="AcceptingTickets" /> استقبال حجوزات جديدة من الـ QR والرابط</label>
+
+        <div><button class="btn primary" type="submit">حفظ</button></div>
+    </form>
+</div>

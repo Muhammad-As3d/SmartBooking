@@ -1,0 +1,95 @@
+@model TicketStatusDto
+@{
+    Layout = "_Bare";
+    ViewData["Title"] = "تذكرتك " + Model.Code;
+    var active = Model.Status is TicketStatus.Waiting or TicketStatus.Called or TicketStatus.InService;
+}
+<div class="narrow" data-ticket="@Model.Token" data-vapid="@ViewBag.VapidKey" data-push="@(Model.PushEnabled ? "1" : "0")" data-status="@Model.Status">
+    @Html.AntiForgeryToken()
+    <div class="hud">
+        <span>LIVE TICKET // <b>@Model.TenantSlug.ToUpperInvariant()</b></span>
+        <span class="conn" data-conn><span class="dot"></span> CONNECTING</span>
+    </div>
+
+    <header class="public-top">
+        <div class="org">
+            <span class="badge">@Html.Icon("ticket")</span>
+            <div>
+                <h1>@Model.TenantName</h1>
+                <span class="muted">@Model.ServiceName</span>
+            </div>
+        </div>
+    </header>
+
+    @if (TempData["flash"] is string flash)
+    {
+        <div class="flash mt-16">@flash</div>
+    }
+
+    <div class="panel live-ticket corners mt-16 @(Model.Status == TicketStatus.Called ? "called" : "")" data-card>
+        <span class="eyebrow">Live digital ticket</span>
+        <div class="code" data-code>@Model.Code</div>
+        <div class="mt-8"><span class="tag @ViewHelpers.StatusTagClass(Model.Status)" data-status-label><span class="dot live"></span> <span data-status-text>@Model.StatusLabel</span></span></div>
+        <p class="lead mt-16 @(Model.CounterName is null || Model.Status == TicketStatus.Waiting ? "hide" : "")" data-counter>
+            اتفضل على <b class="amber" data-counter-name>@Model.CounterName</b>
+        </p>
+    </div>
+
+    <div class="stats-2 mt-16 @(Model.Status == TicketStatus.Waiting ? "" : "hide")" data-waiting>
+        <div><b class="num" data-ahead>@Model.Ahead</b><span>قدامك في الدور</span></div>
+        <div><b class="num" data-eta>@ViewHelpers.Minutes(Model.EtaSeconds)</b><span>دقيقة تقريباً</span></div>
+    </div>
+
+    @if (active)
+    {
+        <div class="callout hl mt-16" data-alert-box>
+            @Html.Icon("bell")
+            <div>
+                <b>هنبهك قبل دورك بـ @Model.AlertLeadMinutes دقيقة</b>
+                <p class="muted" data-push-hint>
+                    @if (Model.PushEnabled && !Model.HasPush)
+                    {
+                        <text>فعّل الإشعارات عشان يوصلك التنبيه حتى لو قفلت الصفحة.</text>
+                    }
+                    else
+                    {
+                        <text>سيب الصفحة مفتوحة، أو ارجعلها من نفس الرابط في أي وقت.</text>
+                    }
+                </p>
+                @if (Model.PushEnabled && !Model.HasPush)
+                {
+                    <button class="btn sm mt-8" type="button" data-enable-push>@Html.Icon("bell") فعّل الإشعارات</button>
+                }
+            </div>
+        </div>
+
+        <div class="callout mt-16">
+            @Html.Icon("link")
+            <div>
+                <b>احفظ رابط التذكرة</b>
+                <p class="muted">الرابط ده خاص بيك. تقدر تقفل الصفحة وترجعلها وهتلاقي دورك محفوظ.</p>
+                <button class="btn sm mt-8" type="button" data-copy-link>نسخ الرابط</button>
+            </div>
+        </div>
+    }
+
+    @if (Model.Status == TicketStatus.Waiting)
+    {
+        <form asp-antiforgery="true" method="post" action="/t/@Model.Token/cancel" class="center mt-24" data-confirm="متأكد إنك عايز تلغي الدور؟">
+            <button class="btn ghost danger sm" type="submit">إلغاء الدور</button>
+        </form>
+    }
+    else if (!active)
+    {
+        <div class="center mt-24">
+            <a class="btn" href="/q/@Model.TenantSlug">احجز دور جديد</a>
+        </div>
+    }
+
+    <p class="center muted mt-32 mono num">ISSUED @ViewHelpers.Time(Model.CreatedAt, Model.TimeZoneId)</p>
+</div>
+
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script src="~/js/ticket.js" asp-append-version="true"></script>
+}

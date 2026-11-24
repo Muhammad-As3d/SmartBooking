@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <partial name="_Head" />
+    <title>@(ViewData["Title"] is string t ? t + " · دوري" : "دوري · إدارة الطوابير والحجز اللحظي")</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "منصة إدارة الطوابير والحجز اللحظي للعيادات والمختبرات ومكاتب الخدمات. حجز بـ QR بدون تطبيق، وقت انتظار حقيقي، وتنبيه قبل الدور.")" />
+</head>
+<body>
+    <header class="site-head">
+        <div class="wrap">
+            <a class="brand" href="/">
+                <span class="mark">#A</span>
+                <span>دوري <small>DORI</small></span>
+            </a>
+            <nav class="nav">
+                <a href="/#how">إزاي بيشتغل</a>
+                <a href="/#features">المميزات</a>
+                <a href="/#pricing">الباقات</a>
+            </nav>
+            <div class="row">
+                <partial name="_ThemeToggle" />
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a class="btn sm" href="/app">لوحة التحكم</a>
+                }
+                else
+                {
+                    <a class="btn ghost sm" href="/account/login">دخول</a>
+                    <a class="btn primary sm" href="/account/register">ابدأ مجاناً</a>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main>
+        @if (TempData["flash"] is string flash)
+        {
+            <div class="wrap mt-16"><div class="flash" data-autohide>@flash</div></div>
+        }
+        @if (TempData["error"] is string error)
+        {
+            <div class="wrap mt-16"><div class="flash error">@error</div></div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="site-foot">
+        <div class="wrap row between wrap-row">
+            <div class="row">
+                <span class="brand sm"><span class="mark">#A</span> دوري</span>
+                <span class="muted">إدارة الطوابير والحجز اللحظي</span>
+            </div>
+            <span class="mono num">© @DateTime.UtcNow.Year DORI // QUEUE OS</span>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

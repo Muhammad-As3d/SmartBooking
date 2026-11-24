@@ -1,0 +1,88 @@
+@model BookingPageDto
+@{
+    Layout = "_Bare";
+    ViewData["Title"] = "احجز دورك · " + Model.Tenant.Name;
+    var t = Model.Tenant;
+}
+<div class="narrow">
+    <div class="hud">
+        <span>DORI // <b>@t.Slug.ToUpperInvariant()</b></span>
+        <span>TC <b data-clock>00:00:00</b></span>
+    </div>
+
+    <header class="public-top">
+        <div class="org">
+            <span class="badge">@Html.Icon(ViewHelpers.KindIcon(t.Kind))</span>
+            <div>
+                <h1>@t.Name</h1>
+                <span class="muted">@Labels.Of(t.Kind)</span>
+            </div>
+        </div>
+    </header>
+
+    @if (TempData["error"] is string error)
+    {
+        <div class="flash error mt-16">@error</div>
+    }
+
+    @if (!Model.IsOpen)
+    {
+        <div class="panel center mt-24">
+            @Html.Icon("clock", "icon-lg amber")
+            <h3 class="mt-16">الحجز مقفول دلوقتي</h3>
+            <p class="muted mt-8">جرّب تاني بعد شوية، أو اسأل الاستقبال.</p>
+        </div>
+    }
+    else if (Model.Services.Count == 0)
+    {
+        <div class="empty mt-24">مفيش خدمات متاحة للحجز حالياً.</div>
+    }
+    else
+    {
+        <form method="post" class="stack mt-24" data-booking>
+            <input type="hidden" name="Src" value="@ViewBag.Source" />
+            <span class="eyebrow">Step 01<span class="sep">//</span>Choose service</span>
+            <div class="svc-list" data-live-services>
+                @for (var i = 0; i < Model.Services.Count; i++)
+                {
+                    var s = Model.Services[i];
+                    <label class="svc-opt">
+                        <input type="radio" name="ServiceId" value="@s.Id" @(i == 0 ? "checked" : "") required />
+                        <span class="box">
+                            <span class="pre">@s.Prefix</span>
+                            <span>
+                                <b>@s.Name</b>
+                                <span class="meta d-block">
+                                    @if (s.OpenCounters == 0) { <text>لسه ما بدأش الاستقبال</text> }
+                                    else { <text>@s.Waiting منتظر · @s.OpenCounters شباك مفتوح</text> }
+                                </span>
+                            </span>
+                            <span class="eta" data-eta="@s.Id"><b>~@ViewHelpers.Minutes(s.EtaSeconds)</b>MIN</span>
+                        </span>
+                    </label>
+                }
+            </div>
+
+            <span class="eyebrow mt-16">Step 02<span class="sep">//</span>Optional</span>
+            <div class="grid g2">
+                <div class="field">
+                    <label for="Name">الاسم</label>
+                    <input id="Name" name="Name" class="input" maxlength="80" autocomplete="name" placeholder="اختياري" />
+                </div>
+                <div class="field">
+                    <label for="Phone">رقم الجوال</label>
+                    <input id="Phone" name="Phone" class="input ltr" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="اختياري" />
+                </div>
+            </div>
+            <p class="hint muted">رقم الجوال بيمنع إن الدور يتكرر لو فتحت الصفحة مرتين.</p>
+
+            <button class="btn primary block lg" type="submit">@Html.Icon("ticket") خد تذكرتك</button>
+        </form>
+    }
+
+    <p class="center muted mt-32 mono num">POWERED BY DORI</p>
+</div>
+
+@section Scripts {
+    <script src="~/js/booking.js" asp-append-version="true"></script>
+}

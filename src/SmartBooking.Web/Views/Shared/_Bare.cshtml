@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <partial name="_Head" />
+    <title>@(ViewData["Title"] is string t ? t + " · دوري" : "دوري")</title>
+    <meta name="robots" content="noindex" />
+</head>
+<body class="@ViewData["BodyClass"]">
+    <partial name="_ThemeToggle" view-data='new ViewDataDictionary(ViewData) { ["ToggleClass"] = "theme-float" }' />
+    @RenderBody()
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

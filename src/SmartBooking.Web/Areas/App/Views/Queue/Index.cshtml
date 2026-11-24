@@ -1,0 +1,54 @@
+@model List<CounterListItem>
+@{
+    ViewData["Title"] = "الشبابيك والنداء";
+    var services = (List<Option>)ViewBag.Services;
+}
+<div class="grid g2">
+    <div class="panel">
+        <div class="panel-head">
+            <h3>اختار نقطة الخدمة بتاعتك</h3>
+            <span class="eyebrow">Counters</span>
+        </div>
+        @if (Model.Count == 0)
+        {
+            <div class="empty">مفيش نقاط خدمة. <a class="amber" href="/app/counters/new">أضف شباك أو عيادة</a></div>
+        }
+        else
+        {
+            <div class="counter-cards">
+                @foreach (var c in Model)
+                {
+                    <a class="panel counter-card @(c.IsOpen ? "hl" : "")" href="/app/queue/@c.Id">
+                        <div class="row between">
+                            <b>@c.Name</b>
+                            <span class="tag @(c.IsOpen ? "ok" : "")"><span class="dot"></span> @(c.IsOpen ? "مفتوح" : "مقفول")</span>
+                        </div>
+                        <span class="code">@(c.CurrentCode ?? "--")</span>
+                        <span class="muted">@c.ServicesCount خدمات</span>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <h3>تذكرة من الاستقبال</h3>
+            <span class="eyebrow">Walk-in</span>
+        </div>
+        <p class="muted">لعميل معندوش موبايل أو جاي من غير حجز. التذكرة بتدخل نفس الطابور.</p>
+        <form asp-antiforgery="true" method="post" action="/app/queue/issue" class="stack mt-16">
+            <div class="field">
+                <label for="ServiceId">الخدمة</label>
+                <select id="ServiceId" name="ServiceId" class="input" required>
+                    @foreach (var s in services) { <option value="@s.Id">@s.Name</option> }
+                </select>
+            </div>
+            <div class="grid g2">
+                <div class="field"><label for="Name">الاسم</label><input id="Name" name="Name" class="input" maxlength="80" /></div>
+                <div class="field"><label for="Phone">الجوال</label><input id="Phone" name="Phone" class="input ltr" maxlength="20" inputmode="tel" /></div>
+            </div>
+            <button class="btn primary" type="submit">@Html.Icon("ticket") إصدار تذكرة</button>
+        </form>
+    </div>
+</div>

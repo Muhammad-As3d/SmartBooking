@@ -1,0 +1,35 @@
+@model TenantSnapshot
+@{
+    ViewData["Title"] = "كود QR والروابط";
+    var bookingUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/q/{Model.Slug}";
+}
+@section Actions {
+    <button class="btn sm primary no-print" type="button" data-print>@Html.Icon("print") طباعة</button>
+}
+<div class="panel hl corners poster">
+    <span class="eyebrow">Feature 01<span class="sep">//</span>Zero app install</span>
+    <h2 class="mt-16">@Model.Name</h2>
+    <p class="lead mt-8">احجز دورك من جوالك، من غير تطبيق</p>
+    <div class="qr-box"><img src="/q/@Model.Slug/qr.svg" alt="QR" /></div>
+    <p>1. امسح الكود بكاميرا الجوال</p>
+    <p>2. اختار الخدمة وخد تذكرتك الرقمية</p>
+    <p>3. هنبعتلك تنبيه قبل دورك بـ <span class="amber">@Model.AlertLeadMinutes دقيقة</span></p>
+    <p class="mono num muted mt-16">@bookingUrl</p>
+</div>
+
+<div class="grid g2 mt-16 no-print">
+    <div class="callout">
+        @Html.Icon("link")
+        <div class="grow"><b>رابط الحجز</b><div class="mono num muted">@bookingUrl</div></div>
+        <a class="btn sm" href="/q/@Model.Slug/qr.svg?fg=dark" download="qr-@(Model.Slug).svg">تحميل QR</a>
+    </div>
+    <div class="callout">
+        @Html.Icon("screen")
+        <div class="grow"><b>شاشة الصالة</b><div class="muted">افتحها على تلفزيون الانتظار بملء الشاشة.</div></div>
+        <a class="btn sm" href="/d/@Model.Slug" target="_blank" rel="noopener">فتح</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/print.js" asp-append-version="true"></script>
+}

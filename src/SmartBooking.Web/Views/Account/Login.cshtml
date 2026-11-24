@@ -1,0 +1,28 @@
+@model LoginModel
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+}
+<section class="auth">
+    <div class="panel corners">
+        <span class="eyebrow">Sign in<span class="sep">//</span>Dashboard</span>
+        <h2 class="mt-8">أهلاً بيك تاني</h2>
+
+        <form method="post" class="stack mt-24" novalidate>
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="field">
+                <label asp-for="Email">البريد الإلكتروني</label>
+                <input asp-for="Email" class="input ltr" type="email" autocomplete="username" autofocus />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Password">كلمة المرور</label>
+                <input asp-for="Password" class="input ltr" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+            <label class="check"><input asp-for="RememberMe" /> افتكرني على الجهاز ده</label>
+            <button class="btn primary block lg" type="submit">دخول</button>
+            <p class="center muted">لسه معندكش حساب؟ <a class="amber" href="/account/register">سجّل منشأتك</a></p>
+        </form>
+    </div>
+</section>

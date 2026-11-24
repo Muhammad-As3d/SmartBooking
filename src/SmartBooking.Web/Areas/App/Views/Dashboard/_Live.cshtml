@@ -1,0 +1,139 @@
+@model OverviewDto
+@{
+    var t = Model.Tenant;
+    var max = Math.Max(1, Model.Last7Days.Max(d => d.Total));
+    var monthPct = Math.Min(100, Model.TicketsThisMonth * 100.0 / Math.Max(1, t.MaxTicketsPerMonth));
+}
+<div class="grid g4">
+    <div class="panel kpi">
+        <span class="label">Waiting now</span>
+        <span class="value">@Model.Waiting</span>
+        <span class="sub">منتظر في الصالة أو في الطريق</span>
+    </div>
+    <div class="panel kpi">
+        <span class="label">Served today</span>
+        <span class="value">@Model.Completed</span>
+        <span class="sub">@Model.Active داخل الخدمة الآن · @Model.NoShow لم يحضر</span>
+    </div>
+    <div class="panel kpi">
+        <span class="label">Avg wait</span>
+        <span class="value">@ViewHelpers.Minutes(Model.AvgWaitSeconds)<small class="muted"> min</small></span>
+        <span class="sub">من الحجز لحد النداء</span>
+    </div>
+    <div class="panel kpi">
+        <span class="label">Open counters</span>
+        <span class="value">@Model.OpenCounters</span>
+        <span class="sub">نقاط خدمة بتستقبل الآن</span>
+    </div>
+</div>
+
+<div class="grid g2 mt-16">
+    <div class="panel">
+        <div class="panel-head">
+            <h3>الخدمات النهارده</h3>
+            <span class="eyebrow">Smart ETA</span>
+        </div>
+        @if (Model.Services.Count == 0)
+        {
+            <div class="empty">مفيش خدمات مفعّلة. <a class="amber" href="/app/services/new">أضف خدمة</a></div>
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table class="table">
+                    <thead><tr><th>Service</th><th>Waiting</th><th>Done</th><th>Avg</th><th>ETA new</th></tr></thead>
+                    <tbody>
+                        @foreach (var s in Model.Services)
+                        {
+                            <tr>
+                                <td><span class="tag amber">@s.Prefix</span> @s.Name</td>
+                                <td class="num">@s.Waiting</td>
+                                <td class="num">@s.Completed</td>
+                                <td class="num">@ViewHelpers.Minutes(s.AvgServiceSeconds)m</td>
+                                <td class="num amber">~@ViewHelpers.Minutes(s.EtaForNewSeconds)m</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <h3>آخر 7 أيام</h3>
+            <span class="eyebrow">Tickets / Served</span>
+        </div>
+        <svg class="bars-svg" viewBox="0 0 700 150" preserveAspectRatio="none" role="img" aria-label="عدد التذاكر في آخر 7 أيام">
+            @for (var i = 0; i < Model.Last7Days.Count; i++)
+            {
+                var d = Model.Last7Days[i];
+                var x = i * 100 + 20;
+                var h = d.Total * 110.0 / max;
+                var hd = d.Completed * 110.0 / max;
+                <rect class="total" x="@x" y="@(120 - h)" width="60" height="@Math.Max(1, h)" rx="3" />
+                <rect class="done" x="@x" y="@(120 - hd)" width="60" height="@hd" rx="3" />
+                @* <text> محجوزة في Razor فبتتكتب كـ raw *@
+                @Html.Raw($"<text x=\"{x + 30}\" y=\"140\" text-anchor=\"middle\">{d.Date:dd/MM}</text>")
+                @Html.Raw($"<text x=\"{x + 30}\" y=\"{112 - h:0.#}\" text-anchor=\"middle\">{d.Total}</text>")
+            }
+        </svg>
+        <hr class="divider" />
+        <div class="usage">
+            <div class="row between"><span class="muted">استهلاك الشهر</span><span class="num">@Model.TicketsThisMonth.ToString("#,0") / @t.MaxTicketsPerMonth.ToString("#,0")</span></div>
+            <svg class="meter" viewBox="0 0 100 4" preserveAspectRatio="none"><rect class="bg" width="100" height="4" rx="2" /><rect class="fg" width="@monthPct.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)" height="4" rx="2" /></svg>
+        </div>
+    </div>
+</div>
+
+<div class="grid g2 mt-16">
+    <div class="panel">
+        <div class="panel-head">
+            <h3>آخر التذاكر</h3>
+            <span class="eyebrow">Live feed</span>
+        </div>
+        @if (Model.Recent.Count == 0)
+        {
+            <div class="empty">لسه مفيش تذاكر النهارده. اطبع الـ QR وعلّقه على الباب.</div>
+        }
+        else
+        {
+            <ul class="queue-list">
+                @foreach (var r in Model.Recent)
+                {
+                    <li>
+                        <span class="c">@r.Code</span>
+                        <span>@r.ServiceName <span class="muted">· @Labels.Of(r.Source) · @ViewHelpers.Time(r.CreatedAt, t.TimeZoneId)</span></span>
+                        <span class="tag @ViewHelpers.StatusTagClass(r.Status)">@Labels.Of(r.Status)</span>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <h3>روابط المنشأة</h3>
+            <span class="eyebrow">Share</span>
+        </div>
+        <div class="stack">
+            <div class="callout">
+                @Html.Icon("link")
+                <div class="grow">
+                    <b>رابط الحجز</b>
+                    <div class="mono num muted">@Context.Request.Host/q/@t.Slug</div>
+                </div>
+                <a class="btn sm" href="/q/@t.Slug" target="_blank" rel="noopener">فتح</a>
+            </div>
+            <div class="callout">
+                @Html.Icon("screen")
+                <div class="grow">
+                    <b>شاشة الصالة</b>
+                    <div class="mono num muted">@Context.Request.Host/d/@t.Slug</div>
+                </div>
+                <a class="btn sm" href="/d/@t.Slug" target="_blank" rel="noopener">فتح</a>
+            </div>
+            <a class="btn block" href="/app/settings/qr">@Html.Icon("print") طباعة بوستر الـ QR</a>
+        </div>
+    </div>
+</div>

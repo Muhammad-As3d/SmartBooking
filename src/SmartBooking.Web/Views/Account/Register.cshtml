@@ -1,0 +1,87 @@
+@model RegisterModel
+@{
+    ViewData["Title"] = "تسجيل منشأة جديدة";
+}
+<section class="auth">
+    <div class="panel corners">
+        <span class="eyebrow">Onboarding<span class="sep">//</span>14-day trial</span>
+        <h2 class="mt-8">جهّز منشأتك في دقايق</h2>
+        <p class="muted mt-8">هنجهزلك خدمة ونقطة خدمة جاهزين، وتقدر تعدّلهم بعدين.</p>
+
+        <form method="post" class="stack mt-24" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <div class="grid g2">
+                <div class="field">
+                    <label asp-for="BusinessName">اسم المنشأة</label>
+                    <input asp-for="BusinessName" class="input" placeholder="عيادة د. أحمد" autocomplete="organization" />
+                    <span asp-validation-for="BusinessName" class="field-validation-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Kind">النشاط</label>
+                    <select asp-for="Kind" class="input">
+                        <option value="@BusinessKind.Clinic">عيادة خاصة</option>
+                        <option value="@BusinessKind.MedicalLab">مختبر طبي</option>
+                        <option value="@BusinessKind.ServiceOffice">مكتب خدمات</option>
+                        <option value="@BusinessKind.Other">نشاط آخر</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label asp-for="Slug">رابط الحجز</label>
+                <div class="input-addon">
+                    <span>@(Context.Request.Host)/q/</span>
+                    <input asp-for="Slug" class="input ltr" placeholder="dr-ahmed" autocomplete="off" data-slug />
+                </div>
+                <span class="hint" data-slug-status>حروف إنجليزي صغيرة وأرقام وشرطة. ده الرابط اللي هيكون في الـ QR.</span>
+                <span asp-validation-for="Slug" class="field-validation-error"></span>
+            </div>
+
+            <div class="grid g2">
+                <div class="field">
+                    <label asp-for="City">المدينة</label>
+                    <input asp-for="City" class="input" placeholder="القاهرة" />
+                </div>
+                <div class="field">
+                    <label asp-for="TimeZoneId">التوقيت</label>
+                    <select asp-for="TimeZoneId" class="input">
+                        @foreach (var z in TenantTime.Supported)
+                        {
+                            <option value="@z.Id">@z.Label</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="grid g2">
+                <div class="field">
+                    <label asp-for="OwnerName">اسمك</label>
+                    <input asp-for="OwnerName" class="input" autocomplete="name" />
+                    <span asp-validation-for="OwnerName" class="field-validation-error"></span>
+                </div>
+                <div class="field">
+                    <label asp-for="Phone">رقم الجوال</label>
+                    <input asp-for="Phone" class="input ltr" inputmode="tel" autocomplete="tel" />
+                    <span asp-validation-for="Phone" class="field-validation-error"></span>
+                </div>
+            </div>
+            <div class="field">
+                <label asp-for="Email">البريد الإلكتروني</label>
+                <input asp-for="Email" class="input ltr" type="email" autocomplete="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Password">كلمة المرور</label>
+                <input asp-for="Password" class="input ltr" autocomplete="new-password" />
+                <span class="hint">8 حروف على الأقل، فيها حرف إنجليزي صغير ورقم.</span>
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+
+            <button class="btn primary block lg" type="submit">إنشاء الحساب وبدء التجربة</button>
+            <p class="center muted">عندك حساب؟ <a class="amber" href="/account/login">ادخل</a></p>
+        </form>
+    </div>
+</section>

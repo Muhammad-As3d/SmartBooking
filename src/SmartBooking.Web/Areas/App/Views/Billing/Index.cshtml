@@ -1,0 +1,115 @@
+@model BillingDto
+@{
+    ViewData["Title"] = "الاشتراك";
+    var t = Model.Tenant;
+    var expired = (bool)ViewBag.Expired;
+    var isOwner = User.IsInRole(AppRoles.Owner);
+    string Pct(int used, int max) => Math.Min(100, used * 100.0 / Math.Max(1, max)).ToString("0.#");
+}
+
+@if (expired)
+{
+    <div class="flash error mb">الاشتراك منتهي أو موقوف، والحجز متوقف للعملاء. جدّد عشان ترجع تشتغل.</div>
+}
+
+<div class="grid g2">
+    <div class="panel hl corners">
+        <span class="eyebrow">Current plan</span>
+        <div class="row between mt-8">
+            <h2>@t.PlanName</h2>
+            <span class="tag @(Model.Usable ? "ok" : "danger")">@SubscriptionRules.StatusLabel(t.SubscriptionStatus)</span>
+        </div>
+        <p class="muted mt-8">
+            @if (t.SubscriptionStatus == SubscriptionStatus.Trial && t.TrialEndsAt is { } te)
+            {
+                <text>التجربة بتنتهي @ViewHelpers.LocalDate(te, t.TimeZoneId)</text>
+            }
+            else if (t.CurrentPeriodEnd is { } pe)
+            {
+                <text>الفترة الحالية لحد @ViewHelpers.LocalDate(pe, t.TimeZoneId)</text>
+            }
+        </p>
+    </div>
+
+    <div class="panel">
+        <span class="eyebrow">Usage</span>
+        <div class="stack mt-16">
+            @foreach (var (label, used, max) in new[]
+            {
+                ("تذاكر الشهر", Model.TicketsThisMonth, t.MaxTicketsPerMonth),
+                ("الخدمات", Model.Services, t.MaxServices),
+                ("نقاط الخدمة", Model.Counters, t.MaxCounters),
+                ("المستخدمين", Model.Staff, t.MaxStaff),
+            })
+            {
+                <div class="usage">
+                    <div class="row between"><span class="muted">@label</span><span class="num">@used.ToString("#,0") / @max.ToString("#,0")</span></div>
+                    <svg class="meter" viewBox="0 0 100 4" preserveAspectRatio="none"><rect class="bg" width="100" height="4" rx="2" /><rect class="fg" width="@Pct(used, max)" height="4" rx="2" /></svg>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-32">الباقات</h3>
+<div class="plans mt-16">
+    @foreach (var p in Model.Plans)
+    {
+        var current = p.Id == t.PlanId;
+        <div class="panel plan @(current ? "hl" : "")">
+            <div class="row between"><h3>@p.Name</h3>@if (current) { <span class="tag amber">باقتك</span> }</div>
+            <div class="price num">@p.MonthlyPrice.ToString("#,0") <small>@ViewHelpers.Currency(p.Currency) / شهرياً</small></div>
+            <ul>
+                <li>@Html.Icon("check") <span class="num">@p.MaxServices</span> خدمات · <span class="num">@p.MaxCounters</span> نقاط خدمة</li>
+                <li>@Html.Icon("check") <span class="num">@p.MaxTicketsPerMonth.ToString("#,0")</span> تذكرة شهرياً</li>
+                <li class="@(p.HasDisplayScreen ? "" : "off")">@Html.Icon(p.HasDisplayScreen ? "check" : "x") شاشة الصالة</li>
+            </ul>
+            @if (isOwner)
+            {
+                <form asp-antiforgery="true" method="post" action="/app/billing/subscribe" class="stack">
+                    <input type="hidden" name="planId" value="@p.Id" />
+                    <select name="months" class="input">
+                        <option value="1">شهري</option>
+                        <option value="3">3 شهور</option>
+                        <option value="6">6 شهور (شهر هدية)</option>
+                        <option value="12">سنوي (شهرين هدية)</option>
+                    </select>
+                    <button class="btn @(current ? "primary" : "") block" type="submit">@(current ? "تجديد" : "اشترك")</button>
+                </form>
+            }
+        </div>
+    }
+</div>
+
+<div class="panel mt-16">
+    <div class="panel-head"><h3>الفواتير</h3><span class="eyebrow">Invoices</span></div>
+    @if (Model.Invoices.Count == 0)
+    {
+        <div class="empty">مفيش فواتير لسه.</div>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>No.</th><th>Plan</th><th>Period</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                <tbody>
+                    @foreach (var i in Model.Invoices)
+                    {
+                        <tr>
+                            <td class="num">@i.Number</td>
+                            <td>@i.PlanName</td>
+                            <td class="num">@i.Months m</td>
+                            <td class="num">@ViewHelpers.Money(i.Amount, i.Currency)</td>
+                            <td><span class="tag @(i.Status == InvoiceStatus.Paid ? "ok" : i.Status == InvoiceStatus.Pending ? "amber" : "")">@Labels.Of(i.Status)</span></td>
+                            <td>@ViewHelpers.LocalDate(i.CreatedAt, t.TimeZoneId)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (Model.Invoices.Any(i => i.Status == InvoiceStatus.Pending))
+        {
+            <p class="muted mt-16">ادفع بالتحويل البنكي أو المحفظة واكتب رقم الفاتورة في البيان؛ الاشتراك بيتفعّل أول ما الدفع يتأكد.</p>
+        }
+    }
+</div>

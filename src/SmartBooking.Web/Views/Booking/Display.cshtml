@@ -1,0 +1,30 @@
+@model DisplayDto
+@{
+    Layout = "_Bare";
+    ViewData["Title"] = "شاشة العرض · " + Model.Tenant.Name;
+}
+<div class="display" data-display="@Model.Tenant.Slug">
+    <div class="hud">
+        <span>DISPLAY // <b>@Model.Tenant.Slug.ToUpperInvariant()</b></span>
+        <span class="conn" data-conn><span class="dot"></span> CONNECTING</span>
+        <span>TC <b data-clock>00:00:00</b></span>
+    </div>
+
+    <div data-board>
+        <partial name="_DisplayBoard" model="Model" />
+    </div>
+
+    <div class="display-foot">
+        <div>
+            <b>@Model.Tenant.Name</b>
+            <div class="muted">امسح الكود واحجز دورك من جوالك، من غير تطبيق.</div>
+        </div>
+        <button class="btn sm no-print" type="button" data-sound>@Html.Icon("megaphone") تفعيل الصوت</button>
+        <img class="qr" src="/q/@Model.Tenant.Slug/qr.svg" alt="QR" />
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script src="~/js/display.js" asp-append-version="true"></script>
+}

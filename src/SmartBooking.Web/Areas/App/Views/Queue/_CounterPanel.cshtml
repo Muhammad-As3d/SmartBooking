@@ -1,0 +1,74 @@
+@model CounterConsoleDto
+@{
+    var cur = Model.Current;
+}
+<div class="console">
+    <div class="panel hl corners current">
+        <span class="eyebrow">Now serving<span class="sep">//</span>@(Model.IsOpen ? "Open" : "Closed")</span>
+        @if (cur is null)
+        {
+            <div class="code">--</div>
+            <p class="muted mt-8">مفيش عميل حالياً. اضغط "التالي" لنداء أول واحد في الدور.</p>
+        }
+        else
+        {
+            <div class="code">@cur.Code</div>
+            <p class="mt-8">@cur.ServiceName @if (cur.CustomerName is not null) { <span class="muted">· @cur.CustomerName</span> }</p>
+            @if (cur.CustomerPhone is not null) { <p class="mono num muted">@cur.CustomerPhone</p> }
+            <span class="tag @ViewHelpers.StatusTagClass(cur.Status) mt-8">@Labels.Of(cur.Status)@(cur.RecallCount > 0 ? $" · نداء {cur.RecallCount + 1}" : "")</span>
+        }
+
+        <div class="actions">
+            <form asp-antiforgery="true" method="post" action="/app/queue/@Model.Id/next" class="inline">
+                <button class="btn primary lg" type="submit">@Html.Icon("megaphone") التالي</button>
+            </form>
+            @if (cur is not null)
+            {
+                @if (cur.Status == TicketStatus.Called)
+                {
+                    <form asp-antiforgery="true" method="post" action="/app/queue/@Model.Id/start/@cur.Id" class="inline"><button class="btn lg" type="submit">@Html.Icon("play") بدء الخدمة</button></form>
+                    <form asp-antiforgery="true" method="post" action="/app/queue/@Model.Id/recall/@cur.Id" class="inline"><button class="btn lg" type="submit">إعادة النداء</button></form>
+                    <form asp-antiforgery="true" method="post" action="/app/queue/@Model.Id/noshow/@cur.Id" class="inline"><button class="btn lg danger" type="submit">لم يحضر</button></form>
+                }
+                else
+                {
+                    <form asp-antiforgery="true" method="post" action="/app/queue/@Model.Id/complete/@cur.Id" class="inline"><button class="btn lg" type="submit">@Html.Icon("check") إنهاء</button></form>
+                }
+            }
+        </div>
+        <p class="muted mt-16 mono num">SERVED TODAY: @Model.ServedToday</p>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <h3>في الانتظار</h3>
+            <span class="tag amber num">@Model.WaitingCount</span>
+        </div>
+        @if (Model.Next.Count == 0)
+        {
+            <div class="empty">الطابور فاضي.</div>
+        }
+        else
+        {
+            <ul class="queue-list">
+                @foreach (var w in Model.Next)
+                {
+                    <li>
+                        <span class="c">@w.Code</span>
+                        <span>@w.ServiceName @if (w.CustomerName is not null) { <span class="muted">· @w.CustomerName</span> }</span>
+                        <span class="tag">@Labels.Of(w.Source)</span>
+                    </li>
+                }
+            </ul>
+            @if (Model.WaitingCount > Model.Next.Count)
+            {
+                <p class="muted mt-8">و@(Model.WaitingCount - Model.Next.Count) كمان…</p>
+            }
+        }
+        <hr class="divider" />
+        <span class="eyebrow">Serves</span>
+        <div class="row wrap-row mt-8">
+            @foreach (var s in Model.ServiceNames) { <span class="tag">@s</span> }
+        </div>
+    </div>
+</div>

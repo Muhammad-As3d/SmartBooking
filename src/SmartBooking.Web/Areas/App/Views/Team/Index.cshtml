@@ -1,0 +1,51 @@
+@model StaffCreateModel
+@{
+    ViewData["Title"] = "فريق العمل";
+    var members = (List<TeamMemberDto>)ViewBag.Members;
+}
+<div class="grid g2">
+    <div class="panel">
+        <div class="panel-head"><h3>المستخدمين</h3><span class="tag num">@members.Count</span></div>
+        <ul class="queue-list">
+            @foreach (var m in members)
+            {
+                <li>
+                    <span class="tag @(m.IsOwner ? "amber" : "")">@(m.IsOwner ? "مالك" : "موظف")</span>
+                    <span><b>@m.FullName</b><div class="muted mono num">@m.Email</div></span>
+                    @if (!m.IsOwner)
+                    {
+                        <form asp-antiforgery="true" method="post" action="/app/team/@m.Id/lock" class="inline">
+                            <input type="hidden" name="locked" value="@(m.IsLocked ? "false" : "true")" />
+                            <button class="btn sm @(m.IsLocked ? "" : "danger")" type="submit">@(m.IsLocked ? "تفعيل" : "إيقاف")</button>
+                        </form>
+                    }
+                    else { <span></span> }
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><h3>إضافة موظف</h3><span class="eyebrow">Staff access</span></div>
+        <p class="muted">الموظف يقدر ينادي ويدير الطابور، لكن ما يقدرش يعدّل الخدمات أو الاشتراك.</p>
+        <form asp-antiforgery="true" method="post" action="/app/team/add" class="stack mt-16" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="field">
+                <label asp-for="FullName">الاسم</label>
+                <input asp-for="FullName" class="input" />
+                <span asp-validation-for="FullName" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Email">البريد</label>
+                <input asp-for="Email" class="input ltr" type="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Password">كلمة مرور مبدئية</label>
+                <input asp-for="Password" class="input ltr" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+            <button class="btn primary" type="submit">@Html.Icon("plus") إضافة</button>
+        </form>
+    </div>
+</div>

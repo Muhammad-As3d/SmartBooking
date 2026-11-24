@@ -1,0 +1,248 @@
+@model List<PlanDto>
+@{
+    ViewData["Title"] = "إدارة الطوابير والحجز اللحظي";
+}
+
+<section class="wrap">
+    <div class="hud">
+        <span>DORI // 01 &nbsp; QUEUE OS</span>
+        <span class="progress"><i></i></span>
+        <span>TC <b data-clock>00:00:00</b></span>
+    </div>
+</section>
+
+<section class="hero">
+    <div class="wrap hero-grid">
+        <div>
+            <span class="eyebrow">Smart Queue<span class="sep">//</span>Clinics · Labs · Service desks</span>
+            <h1 class="mt-16">عميلك ما يستناش<br /><span class="hl">ولا دقيقة</span> في الزحمة.</h1>
+            <p class="lead">
+                دوري بيحوّل صالة الانتظار لطابور رقمي: العميل يمسح الـ QR على الباب، ياخد تذكرة حية في جواله،
+                يعرف وقت دخوله الحقيقي، ويوصله تنبيه قبل دوره بربع ساعة يتحرك فيه من بيته.
+            </p>
+            <div class="actions">
+                <a class="btn primary lg" href="/account/register">جرّبه 14 يوم مجاناً</a>
+                <a class="btn lg" href="#how">@Html.Icon("play") شوف إزاي بيشتغل</a>
+            </div>
+            <div class="hero-meta">
+                <div><b class="num">0</b><span>تطبيقات يحمّلها العميل</span></div>
+                <div><b class="num">15m</b><span>تنبيه قبل الدور</span></div>
+                <div><b class="num">&lt;1s</b><span>تحديث الرقم على كل الشاشات</span></div>
+            </div>
+        </div>
+
+        <div aria-hidden="true">
+            <div class="phone">
+                <div class="notch"></div>
+                <div class="svc">@Html.Icon("check") يختار الخدمة المطلوبة</div>
+                <div class="ticket-card">
+                    <span class="eyebrow">Live digital ticket</span>
+                    <div class="mt-8">تذكرة رقمية حية</div>
+                    <div class="code" data-demo-code>#A-14</div>
+                    <div class="muted">في جواله فوراً</div>
+                </div>
+                <div class="stats-2 mt-16">
+                    <div><b class="num" data-demo-ahead>3</b><span>قدامك</span></div>
+                    <div><b class="num" data-demo-eta>22</b><span>دقيقة تقريباً</span></div>
+                </div>
+                <div class="lane">
+                    <span class="door">@Html.Icon("clinic")</span>
+                    <span class="people"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                    <small>الطابور بيتقدم</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="how">
+    <div class="wrap">
+        <div class="section-head">
+            <span class="eyebrow">Market gap<span class="sep">//</span>MENA &amp; GCC</span>
+            <h2>لو رحت لأي عيادة أو مختبر أو مكتب خدمات</h2>
+            <p>هتلاقيهم لسه شغالين <span class="amber">بطريقتين قديمة</span>، والاتنين بيخلصوا بنفس النتيجة.</p>
+        </div>
+
+        <div class="old-ways">
+            <div class="panel way">
+                <span class="label">METHOD 01 // PAPER</span>
+                <div class="ico">#042</div>
+                <h3>ورق وأرقام</h3>
+                <p class="muted">عند الاستقبال</p>
+            </div>
+            <div class="panel way hot">
+                <span class="label">METHOD 02 // CHAT</span>
+                <div class="ico">@Html.Icon("list")</div>
+                <h3>حجز عشوائي</h3>
+                <p class="muted">بالواتساب</p>
+            </div>
+        </div>
+
+        <div class="panel hl corners mt-16 center">
+            <h3>بيخلص بزحمة مراجعين</h3>
+            <p class="amber">في صالة انتظار ضيقة</p>
+            <div class="crowd" aria-hidden="true">
+                <i class="a">@Html.Icon("user")</i><i>@Html.Icon("user")</i><i>@Html.Icon("user")</i><i class="a">@Html.Icon("user")</i><i>@Html.Icon("user")</i>
+                <i>@Html.Icon("user")</i><i class="a">@Html.Icon("user")</i><i>@Html.Icon("user")</i><i>@Html.Icon("user")</i><i>@Html.Icon("user")</i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="features">
+    <div class="wrap">
+        <div class="section-head">
+            <span class="eyebrow">System architecture<span class="sep">//</span>Overview</span>
+            <h2>منصة ويب خفيفة + لوحة تحكم للعيادة</h2>
+            <p>شغالة بتلات مميزات ذكية، وتحتها باك إند مبني يتحمّل الضغط من غير ما رقم يتكرر.</p>
+        </div>
+
+        <div class="feature">
+            <div>
+                <span class="eyebrow">Feature 01<span class="sep">//</span>Zero app install</span>
+                <h3>حجز من غير تحميل تطبيق</h3>
+                <p>العميل يمسح كود QR عند الباب أو يفتح رابط سريع، يختار الخدمة، وتطلعله فوراً تذكرة رقمية حية في جواله.</p>
+                <ul>
+                    <li>بوستر QR جاهز للطباعة من لوحة التحكم</li>
+                    <li>رقم الجوال اختياري، ونفس الرقم ما ياخدش دورين لنفس الخدمة</li>
+                    <li>الاستقبال يقدر يطلع تذكرة لعميل معندوش موبايل</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <div class="row between">
+                    <div>
+                        <div>يمسح كود</div>
+                        <div class="mono amber">QR CODE</div>
+                        <div class="muted">أو يفتح رابط سريع</div>
+                    </div>
+                    <div class="way"><div class="ico">@Html.Icon("qr", "icon-lg")</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div>
+                <span class="eyebrow">Feature 02<span class="sep">//</span>Smart ETA engine</span>
+                <h3>وقت انتظار فعلي، مش رقم جامد</h3>
+                <p>النظام بيحسب متوسط وقت كل مراجع عند الدكتور أو الموظف، ويتعلم مع كل تذكرة بتخلص، ويحدّث وقت دخولك المتوقع أول بأول.</p>
+                <ul>
+                    <li>متوسط متحرك بيتجاهل الحالات الشاذة</li>
+                    <li>بيحسب عدد الشبابيك المفتوحة فعلاً</li>
+                    <li>بيتحدث لحظياً على جوال العميل</li>
+                </ul>
+            </div>
+            <div class="panel eta-demo">
+                <div class="bad"><span class="x">✕</span> ما يديكش رقم جامد ويمشي</div>
+                <div class="panel hl">
+                    <div class="amber center">بيحسب متوسط وقت كل مراجع</div>
+                    <div class="ring mt-16" aria-hidden="true">
+                        <svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="54" fill="none" stroke-width="2" /><circle class="bar" cx="60" cy="60" r="54" fill="none" stroke-width="3" stroke-dasharray="339.3" stroke-dashoffset="250" stroke-linecap="round" /></svg>
+                        <div class="val"><b>11:00</b><span>وقت الانتظار</span></div>
+                    </div>
+                    <div class="formula">AVG SESSION × AHEAD ÷ OPEN COUNTERS</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div>
+                <span class="eyebrow">Feature 03<span class="sep">//</span>Proactive smart alert</span>
+                <h3>التنبيه الذكي قبل دورك بـ 15 دقيقة</h3>
+                <p>أول ما دورك يقرب، يوصلك إشعار تلقائي في جوالك عشان تتحرك من بيتك أو تنزل من عربيتك وتدخل على موعدك بالظبط.</p>
+                <ul>
+                    <li>إشعار حتى لو الصفحة مقفولة (Web Push)</li>
+                    <li>تنبيه تاني لحظة النداء باسم الشباك</li>
+                    <li>مدة التنبيه بتتظبط من الإعدادات</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <div class="panel hl row between">
+                    <div><div class="muted">أول ما يقرب دورك بـ</div><div class="amber"><b class="num">15</b> دقيقة</div></div>
+                    @Html.Icon("bell", "icon-lg amber")
+                </div>
+                <div class="route">
+                    <div class="stop">@Html.Icon("home") من بيتك</div>
+                    <span class="arrow"></span>
+                    <div class="stop on">@Html.Icon("car") أو عربيتك</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div>
+                <span class="eyebrow">Backend engineering<span class="sep">//</span>Core value</span>
+                <h3>يمنع تضارب الحجوزات في نفس الثانية</h3>
+                <p>لو عميلين ضغطوا في نفس الملّي ثانية، كل واحد بياخد رقم مختلف بأقفال على مستوى الداتابيز، ولو شباكين ضغطوا "التالي" مع بعض كل واحد بياخد عميل مختلف.</p>
+                <ul>
+                    <li>ترقيم ذري (atomic) لكل خدمة في اليوم</li>
+                    <li>تحديثات لحظية عبر WebSockets على جوال العميل وشاشة الصالة</li>
+                    <li>عزل كامل لبيانات كل منشأة</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <div class="race" aria-hidden="true">
+                    <div class="who a">@Html.Icon("user") عميل 1</div>
+                    <div class="clock">00:00.001s</div>
+                    <div class="who b">@Html.Icon("user") عميل 2</div>
+                    <div class="lock"><span class="slot on">A-015</span><span class="slot">A-016</span></div>
+                </div>
+                <div class="center mt-16"><span class="tag amber mono">WebSockets</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="wrap">
+        <div class="section-head">
+            <span class="eyebrow">Target sectors<span class="sep">//</span>Clinics &amp; Labs</span>
+            <h2>معمول لأي مكان فيه صالة انتظار</h2>
+        </div>
+        <div class="grid g3">
+            <div class="panel center">@Html.Icon("clinic", "icon-lg amber")<h3 class="mt-16">عيادة خاصة</h3><p class="muted mono">CLINIC</p></div>
+            <div class="panel center">@Html.Icon("lab", "icon-lg amber")<h3 class="mt-16">مختبر طبي</h3><p class="muted mono">MEDICAL LAB</p></div>
+            <div class="panel center">@Html.Icon("desk", "icon-lg amber")<h3 class="mt-16">مكتب خدمات</h3><p class="muted mono">SERVICE DESK</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="section @(Model.Count == 0 ? "hide" : "")" id="pricing">
+    <div class="wrap">
+        <div class="section-head">
+            <span class="eyebrow">Revenue model<span class="sep">//</span>B2B SaaS</span>
+            <h2>اشتراك شهري ثابت</h2>
+            <p>ابدأ بـ 14 يوم تجربة كاملة على الباقة الاحترافية. من غير بطاقة.</p>
+        </div>
+        <div class="plans">
+            @foreach (var p in Model)
+            {
+                var featured = p.Code == "pro";
+                <div class="panel plan @(featured ? "hl corners" : "")">
+                    <div class="row between">
+                        <h3>@p.Name</h3>
+                        @if (featured) { <span class="tag amber">الأكثر طلباً</span> }
+                    </div>
+                    <div class="price num">@p.MonthlyPrice.ToString("#,0") <small>@ViewHelpers.Currency(p.Currency) / شهرياً</small></div>
+                    <ul>
+                        <li>@Html.Icon("check") <span><b class="num">@p.MaxServices</b> خدمات</span></li>
+                        <li>@Html.Icon("check") <span><b class="num">@p.MaxCounters</b> نقاط خدمة (شبابيك / عيادات)</span></li>
+                        <li>@Html.Icon("check") <span><b class="num">@p.MaxStaff</b> مستخدمين</span></li>
+                        <li>@Html.Icon("check") <span><b class="num">@p.MaxTicketsPerMonth.ToString("#,0")</b> تذكرة شهرياً</span></li>
+                        <li class="@(p.HasPushAlerts ? "" : "off")">@Html.Icon(p.HasPushAlerts ? "check" : "x") التنبيه الذكي على الجوال</li>
+                        <li class="@(p.HasDisplayScreen ? "" : "off")">@Html.Icon(p.HasDisplayScreen ? "check" : "x") شاشة عرض للصالة</li>
+                    </ul>
+                    <a class="btn @(featured ? "primary" : "") block" href="/account/register?plan=@p.Code">ابدأ التجربة</a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="wrap">
+    <div class="panel hl corners cta-band">
+        <span class="eyebrow">Predictable monthly recurring revenue</span>
+        <h2 class="mt-8">صالة انتظار فاضية، وعملاء راضيين</h2>
+        <p class="lead">جهّز منشأتك في أقل من 5 دقايق، واطبع الـ QR وعلّقه على الباب.</p>
+        <a class="btn primary lg mt-24" href="/account/register">ابدأ دلوقتي</a>
+    </div>
+</section>

@@ -1,0 +1,15 @@
+@model CounterConsoleDto
+@{
+    ViewData["Title"] = Model.Name;
+}
+@section Actions {
+    <form asp-antiforgery="true" method="post" action="/app/queue/@Model.Id/open" class="inline">
+        <input type="hidden" name="open" value="@(Model.IsOpen ? "false" : "true")" />
+        <button class="btn sm" type="submit">@(Model.IsOpen ? "قفل الشباك" : "فتح الشباك")</button>
+    </form>
+    <a class="btn sm ghost" href="/app/queue">كل الشبابيك</a>
+}
+
+<div data-live-src="/app/queue/@Model.Id/panel">
+    <partial name="_CounterPanel" model="Model" />
+</div>

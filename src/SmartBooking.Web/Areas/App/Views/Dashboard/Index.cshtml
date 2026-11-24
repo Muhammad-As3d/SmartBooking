@@ -1,0 +1,32 @@
+@model OverviewDto
+@{
+    ViewData["Title"] = "نظرة عامة";
+    var t = Model.Tenant;
+    var now = DateTime.UtcNow;
+}
+@section Actions {
+    <form asp-antiforgery="true" method="post" action="/app/settings/accepting" class="inline">
+        <input type="hidden" name="accepting" value="@(!t.AcceptingTickets ? "true" : "false")" />
+        <input type="hidden" name="returnUrl" value="/app" />
+        <button class="btn sm @(t.AcceptingTickets ? "" : "primary")" type="submit">
+            @(t.AcceptingTickets ? "إيقاف الحجز مؤقتاً" : "فتح الحجز")
+        </button>
+    </form>
+    <a class="btn sm primary" href="/app/queue">@Html.Icon("megaphone") شاشة النداء</a>
+}
+
+@if (t.SubscriptionStatus == SubscriptionStatus.Trial && t.TrialEndsAt is { } trialEnd)
+{
+    var days = Math.Max(0, (int)Math.Ceiling((trialEnd - now).TotalDays));
+    <div class="callout hl mb">
+        @Html.Icon("clock")
+        <div class="row between wrap-row grow">
+            <span>فاضل <b class="num">@days</b> يوم في الفترة التجريبية على باقة @t.PlanName.</span>
+            <a class="btn sm" href="/app/billing">اختار باقتك</a>
+        </div>
+    </div>
+}
+
+<div data-live-src="/app/Dashboard/Live">
+    <partial name="_Live" model="Model" />
+</div>
